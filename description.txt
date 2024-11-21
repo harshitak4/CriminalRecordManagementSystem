@@ -1,0 +1,6 @@
+Language -  Python
+version - 3.8
+IDE - VS code
+Framework - flask
+Testing tool- Postman
+library used- datetime,hashlib,json,flask,requests,urlparse,rsa
