@@ -31,15 +31,6 @@ A secure and efficient database management system designed to digitize, store, a
 
 ---
 
-## 📸 Screenshots
-
-| Dashboard View | Add Record Interface |
-|:---:|:---:|
-| ![Dashboard](path/to/image1.png) | ![Add Record](path/to/image2.png) |
-*(Add screenshots of your project here to make it attractive)*
-
----
-
 ## ⚙️ Installation & Setup
 
 1.  **Clone the repository:**
