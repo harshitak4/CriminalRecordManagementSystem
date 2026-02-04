@@ -1,89 +1,54 @@
-# 📂 Criminal Record Management System
+# Criminal Record Management System (Advanced)
 
-A secure and efficient database management system designed to digitize, store, and manage criminal records for law enforcement agencies. This system automates the manual process of recording criminal data, making retrieval faster and analysis easier.
+A distributed, blockchain-based system for managing criminal records with Authority handling.
 
----
+## Features
+- **Modular Architecture**: Clean separation of concerns (API, Blockchain, Crypto).
+- **RSA Authority**: Private/Public key based record validation.
+- **REST API**: Flask-based API for interacting with the blockchain.
+- **Persistence**: Chains are saved to disk (`data/` directory).
+- **Dynamic Configuration**: Nodes configured via `config/nodes.json`.
 
-## 🚀 Features
+## Installation
 
-* **Admin Dashboard:** Secure login for administrators to oversee the entire system.
-* **Criminal Record Management:** Add, update, delete, and view detailed criminal profiles (Name, Crime, Status, Conviction).
-* **Search & Filter:** Advanced search functionality to find records by ID, Name, or Crime Type.
-* **Complaint Registration:** Module for citizens or officers to log new complaints.
-* **Database Security:** Role-based access control to ensure data integrity.
-* **Responsive Design:** User-friendly interface accessible on various devices.
+1. Run the setup script to install dependencies and initialize directories:
+   ```bash
+   python setup.py
+   ```
 
----
+2. This will install:
+   - flask
+   - rsa
+   - requests
 
-## 🛠️ Tech Stack
+## Usage
 
-**Frontend:**
-* [e.g., HTML5, CSS3, JavaScript / React / Bootstrap]
+### Running a Node
+Run a specific authority node by ID (0-4 defined in default config):
 
-**Backend:**
-* [e.g., Python (Django/Flask) / PHP / Node.js / Java (Spring Boot)]
+```bash
+python main.py run --node-id 0
+```
+This will start Node 0 on port 5000 (default).
 
-**Database:**
-* [e.g., MySQL / PostgreSQL / MongoDB]
+### Generating Keys
+If keys are missing, they are auto-generated on first run. To manually generate:
 
-**Tools:**
-* [e.g., Git, GitHub, VS Code, XAMPP]
+```bash
+python main.py gen-keys --node-id 0
+```
 
----
+### API Endpoints
+- `GET /get_chain`: Retrieve the full blockchain.
+- `GET /add_block`: Mine a new block.
+- `POST /add_transaction`: Add a criminal record.
+- `POST /verify_record`: Verify if a record exists in the chain.
+- `POST /connect_node`: Connect to other peers.
+- `GET /replace_chain`: Consensus algorithm to resolve conflicts.
 
-## ⚙️ Installation & Setup
-
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/harshitak4/CriminalRecordManagementSystem.git](https://github.com/harshitak4/CriminalRecordManagementSystem.git)
-    cd CriminalRecordManagementSystem
-    ```
-
-2.  **Install dependencies:**
-    ```bash
-    [e.g., pip install -r requirements.txt / npm install]
-    ```
-
-3.  **Configure Database:**
-    * Create a database named `crime_db`.
-    * Import the `schema.sql` file (if applicable).
-    * Update database credentials in the configuration file.
-
-4.  **Run the application:**
-    ```bash
-    [e.g., python manage.py runserver / npm start / php -S localhost:8000]
-    ```
-
----
-
-## 🗂️ Database Schema
-
-* **Users Table:** Stores admin and officer login credentials.
-* **Criminals Table:** Stores personal details, photo, and ID.
-* **Crimes Table:** Links criminals to specific incidents and FIRs.
-* **Stations Table:** Details of police stations and jurisdiction.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please fork the repository and create a pull request.
-
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/NewFeature`)
-3.  Commit your Changes (`git commit -m 'Add some NewFeature'`)
-4.  Push to the Branch (`git push origin feature/NewFeature`)
-5.  Open a Pull Request
-
----
-
-## 👤 Author
-
-**Harshita Kumari**
-* **GitHub:** [harshitak4](https://github.com/harshitak4)
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
+## Project Structure
+- `src/`: Source code.
+- `config/`: Configuration files.
+- `keys/`: RSA Keys.
+- `data/`: Blockchain persistence.
+- `legacy/`: Old implementation files.

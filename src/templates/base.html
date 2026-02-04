@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRMS Blockchain - {% block title %}Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="animate-fade-in">
+            <a href="/" class="brand">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                CRMS Authority Node {{ node_id }}
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="/" class="{{ 'active' if request.path == '/' else '' }}">Dashboard</a></li>
+                    <li><a href="/add_record" class="{{ 'active' if request.path == '/add_record' else '' }}">Add Record</a></li>
+                    <li><a href="/verify" class="{{ 'active' if request.path == '/verify' else '' }}">Verify Record</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="animate-fade-in" style="animation-delay: 0.1s;">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="card" style="border-left: 4px solid {{ 'var(--success-color)' if category == 'success' else 'var(--error-color)' }}; padding: 1rem;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

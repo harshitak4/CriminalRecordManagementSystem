@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Add Record{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+    <h2 style="margin-bottom: 2rem;">Add Criminal Record</h2>
+    <form action="/add_record" method="POST">
+        <div class="grid">
+            <div class="form-group">
+                <label for="uid">Unique ID (UID)</label>
+                <input type="text" id="uid" name="uid" required placeholder="e.g. 123456789">
+            </div>
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required placeholder="e.g. John Doe">
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="form-group">
+                <label for="pid">Police ID</label>
+                <input type="text" id="pid" name="pid" required placeholder="e.g. PID-99">
+            </div>
+            <div class="form-group">
+                <label for="court_id">Court ID</label>
+                <input type="text" id="court_id" name="court_id" required placeholder="e.g. CRT-01">
+            </div>
+        </div>
+
+        <div class="grid" style="grid-template-columns: 1fr 1fr 1fr;">
+            <div class="form-group">
+                <label for="district">District</label>
+                <input type="text" id="district" name="district" required>
+            </div>
+            <div class="form-group">
+                <label for="state">State</label>
+                <input type="text" id="state" name="state" required>
+            </div>
+            <div class="form-group">
+                <label for="section">Section</label>
+                <input type="text" id="section" name="section" required placeholder="e.g. IPC 302">
+            </div>
+        </div>
+
+        <div style="text-align: right; margin-top: 1rem;">
+            <button type="submit" class="btn">Submit to Blockchain</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

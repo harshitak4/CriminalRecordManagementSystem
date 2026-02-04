@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Record{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto; text-align: center;">
+    <h2 style="margin-bottom: 2rem;">Verify Criminal Record</h2>
+    <form action="/verify" method="POST">
+        <div class="form-group">
+            <label for="uid" style="text-align: left;">Enter Unique ID (UID) to Verify</label>
+            <input type="text" id="uid" name="uid" required placeholder="Search UID..." style="font-size: 1.2rem;">
+        </div>
+        <button type="submit" class="btn" style="width: 100%;">Verify on Ledger</button>
+    </form>
+</div>
+
+{% if result %}
+<div class="card animate-fade-in" style="max-width: 600px; margin: 2rem auto; border-color: var(--success-color);">
+    <h3 style="color: var(--success-color); margin-bottom: 1rem;">Record Found in Blockchain</h3>
+    <div class="grid" style="grid-template-columns: 1fr;">
+        <p><strong>Name:</strong> {{ result.name }}</p>
+        <p><strong>UID:</strong> {{ result.uid }}</p>
+        <p><strong>Section:</strong> {{ result.section }}</p>
+        <p><strong>District:</strong> {{ result.district }}</p>
+        <p><strong>State:</strong> {{ result.state }}</p>
+    </div>
+</div>
+{% elif searched %}
+<div class="card animate-fade-in" style="max-width: 600px; margin: 2rem auto; border-color: var(--error-color);">
+    <h3 style="color: var(--error-color);">Record Not Found</h3>
+    <p>No transaction found with UID: {{ searched_uid }}</p>
+</div>
+{% endif %}
+{% endblock %}
