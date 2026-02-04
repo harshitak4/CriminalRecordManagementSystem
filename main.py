@@ -1,79 +1,78 @@
-import datetime
-import hashlib
+import argparse
 import json
-import rsa
+import os
+import sys
+from src.api import create_app
+from src.crypto_utils import CryptoUtils
 
-class KeyGeneration:
-    def generateKeys(self):
-        for i in range(5):
-            public_key, private_key = rsa.newkeys(512)
-            with open("Authorities_Public_Keys/"+f"Authority_{i}_PublicKey.pem", 'wb') as f:
-                f.write(public_key.save_pkcs1("PEM"))
-            with open(f"Authority_{i}_PrivateKey.pem", 'wb') as f:
-                f.write(private_key.save_pkcs1("PEM"))
+def load_config():
+    config_path = "config/nodes.json"
+    if not os.path.exists(config_path):
+        print("Config file not found in config/nodes.json")
+        sys.exit(1)
+    with open(config_path, "r") as f:
+        return json.load(f)
 
-class Blockchain:
-    def __init__(self):
-        self.fp = open("KeyLedger.json", "r")
-        self.chain = json.load(self.fp)
-        self.wfp = open("KeyLedger.json", "w")
+def run_node(node_id, port):
+    print(f"Starting Node {node_id} on port {port}")
+    config = load_config()
+    
+    peers = []
+    for node in config["nodes"]:
+        if node["id"] != node_id:
+            peers.append(f"{node['host']}:{node['port']}")
+            
+    app = create_app(node_id, port, peers)
+    app.run(host='0.0.0.0', port=port)
 
-    def create_block(self, proof1, proof2, previous_hash):
-        block = {'index': len(self.chain["blocks"]) + 1,
-                 'timestamp': str(datetime.datetime.now()),
-                 'proof1': proof1,
-                 'proof2': proof2,
-                 'previous_hash': previous_hash
-                 }
-        self.chain["blocks"].append(block)
-        return block
+def generate_keys(node_id=None):
+    if node_id is not None:
+        print(f"Generating keys for Node {node_id}")
+        CryptoUtils.generate_keys(node_id, key_dir="keys")
+    else:
+        print("Generating keys for all nodes in config...")
+        config = load_config()
+        for node in config["nodes"]:
+            print(f"Generating keys for Node {node['id']}")
+            CryptoUtils.generate_keys(node['id'], key_dir="keys")
 
-    def get_previous_block(self):
-        return self.chain["blocks"][-1]
+def main():
+    parser = argparse.ArgumentParser(description="Criminal Record Management System Node")
+    subparsers = parser.add_subparsers(dest="command")
 
-    def hash_block(self, block):
-        encoded_block = json.dumps(block, sort_keys=True).encode()
-        return hashlib.sha256(encoded_block).hexdigest()
+    run_parser = subparsers.add_parser("run", help="Run a blockchain node")
+    run_parser.add_argument("--node-id", type=int, required=True, help="Node ID (0-4)")
+    run_parser.add_argument("--port", type=int, help="Port to run on (overrides config)")
 
-    def is_chain_valid(self, chain):
-        previous_block = self.chain["blocks"][0]
-        block_index = 1
-        while block_index < len(chain):
-            block = chain[block_index]
-            if block['previous_hash'] != self.hash(previous_block):
-                return False
-            previous_block = block
-            block_index += 1
-        return True
+    gen_keys_parser = subparsers.add_parser("gen-keys", help="Generate RSA keys")
+    gen_keys_parser.add_argument("--node-id", type=int, help="Specific node ID (optional)")
 
-    def addBlock(self, node, i):
-        with open("Authorities_Public_Keys/"+f"Authority_{i}_PublicKey.pem", "rb") as f:
-            publickey = rsa.PublicKey.load_pkcs1(f.read())
-        with open(f"Authority_{i}_PrivateKey.pem", "rb") as f:
-            privatekey = rsa.PrivateKey.load_pkcs1(f.read())
-        proof1 = hashlib.sha256(str(publickey).encode()).hexdigest()
-        proof2 = hashlib.sha256(
-            (str(publickey)+str(privatekey)+node).encode()).hexdigest()
-        if len(self.chain["blocks"]) == 0:
-            previous_hash = '0'
-            self.create_block(proof1, proof2, previous_hash)
-        elif len(self.chain["blocks"]) > 0:
-            prv_block = self.get_previous_block()
-            previous_hash = self.hash_block(prv_block)
-            self.create_block(proof1, proof2, previous_hash)
+    args = parser.parse_args()
 
-        if self.is_chain_valid(self.chain):
-            print("ALL GOOD")
-        else:
-            print("Problem Detected")
+    if args.command == "run":
+        config = load_config()
+        port = args.port
+        if not port:
+            # Find port from config
+            for node in config["nodes"]:
+                if node["id"] == args.node_id:
+                    port = node["port"]
+                    break
+        if not port:
+            port = 5000 + args.node_id 
+            
+        # Ensure keys exist
+        if not os.path.exists(f"keys/Authority_{args.node_id}_PrivateKey.pem"):
+            print(f"Keys for node {args.node_id} not found. Generating...")
+            CryptoUtils.generate_keys(args.node_id, key_dir="keys")
+            
+        run_node(args.node_id, port)
+        
+    elif args.command == "gen-keys":
+        generate_keys(args.node_id)
+        
+    else:
+        parser.print_help()
 
-
-if __name__ == '__main__':
-    keyGeneration = KeyGeneration()
-    keyGeneration.generateKeys()
-    keyLedger = Blockchain()
-    with open("nodes.json", "r") as rd:
-        nodes = json.load(rd)
-    for i in range(5):
-        keyLedger.addBlock(nodes["nodes"][i], i)
-    json.dump(keyLedger.chain, keyLedger.wfp, indent=4)
+if __name__ == "__main__":
+    main()

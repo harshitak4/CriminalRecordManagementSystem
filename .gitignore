@@ -1,0 +1,18 @@
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+
+# Project specific
+keys/*.pem
+data/*.json
+logs/*
+
+# OS specific
+.DS_Store
+Thumbs.db
